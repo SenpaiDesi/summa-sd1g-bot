@@ -18,6 +18,7 @@ class huiswerk(commands.Cog):
 
 
     @commands.command(name="huiswerkcheck", description="Kijk of er opdrachten zijn vandaag.")
+    # Check of er huiswerk is dat VANDAAG af moet zijn.
     async def huiswerk_check(self, ctx):
         db = await utilities.connect_database()
         await utilities.check_huiswerk_vandaag()
@@ -35,6 +36,7 @@ class huiswerk(commands.Cog):
             pass
     
     @commands.command(name="huiswerkadd")
+    # Voeg huiswerk toe
     async def additem(self, ctx, vak:str, opdr:str, url:str, deadline:str):
         db = await utilities.connect_database()
         await db.execute(F"INSERT OR IGNORE INTO huiswerk VALUES (?, ?, ?, ?)", (vak, opdr, url, deadline, ))
@@ -47,6 +49,7 @@ class huiswerk(commands.Cog):
 
 
     @app_commands.command(name="deletehw", description="Verwijder huiswerk uit de database.")
+    # Verwijder huiswerk van de database.
     async def deletehw(self, interaction : discord.Interaction, url: str):
         db = await utilities.connect_database()
         await db.execute("DELETE FROM HUISWERK WHERE url = ?", (url, ))

@@ -9,13 +9,16 @@ MY_GUILD = discord.Object(id=981263222545989722)   # mijn server 981263222545989
 
 intents = discord.Intents.all()
 intents.message_content = True
+ 
+ # Zet de basis prefix naar sd-
 class MyBot(commands.Bot):
     def __init__(self, intents= intents):
         super().__init__(intents=intents, command_prefix="sd-", application_id = 1027135965891923988)
-
+    # Sync de slash commands (/)
     async def setup_hook(self):
         await bot.tree.sync()
 
+    # Laad de extensies (aka andere files.)
     async def on_ready(self):
         link = utilities.load_json(assets.jsonfile)
         linkurl = link["url"]
@@ -28,11 +31,13 @@ class MyBot(commands.Bot):
 
 bot = MyBot()
 bot.remove_command("help")
+
+# Uitleg voor command syncing. Alleen te gebruiken voor development.
 """sd-sync -> global sync
-!sync ~ -> sync current guild
-!sync * -> copies all global app commands to current guild and syncs
-!sync ^ -> clears all commands from the current guild target and syncs (removes guild commands)
-!sync id_1 id_2 -> syncs guilds with id 1 and 2"""
+sd-sync ~ -> sync current guild
+sd-sync * -> copies all global app commands to current guild and syncs
+sd-sync ^ -> clears all commands from the current guild target and syncs (removes guild commands)
+sd- sync id_1 id_2 -> syncs guilds with id 1 and 2"""
 
 @bot.command(name="synccmd")
 async def sync(
