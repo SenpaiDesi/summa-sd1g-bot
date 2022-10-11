@@ -15,8 +15,6 @@ class faq(commands.Cog):
         Choice(name="Itslearning", value="itslearning"),
         Choice(name="Rooster", value="rooster"),
         Choice(name="Wachtwoord Reset/Veranderen", value="paswdreset")
-        #Choice(name="unban ticket", value="unban"),
-        #Choice(name="Anticheat Unban ticket", value="acunban")
     ])
     async def subticket(self, interaction:discord.Interaction, link_type:str):
         channel = self.bot.get_channel(1024327971374387241)

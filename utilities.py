@@ -3,7 +3,7 @@ import aiosqlite
 import time
 from datetime import datetime
 current_date = datetime.utcnow()
-new_time = current_date.strftime('%Y-%m-%d')
+new_time = current_date.strftime('%d-%m-%Y')
 def load_json(path):
     with open(path) as f:
         return json.load(f)

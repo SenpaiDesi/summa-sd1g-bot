@@ -21,14 +21,14 @@ class huiswerk(commands.Cog):
     async def huiswerk_check(self, interaction: discord.Interaction):
         db = await utilities.connect_database()
         await utilities.check_huiswerk_vandaag()
-        if utilities.check_huiswerk_vandaag is None:
-            return interaction.response.send_message("Geen huiswerk voor vandaag.")
-        else:
-            async with db.execute(f"SELECT vak, opdracht, url FROM huiswerk WHERE time = ? ", (str(new_time),))as results:
-                print(new_time)
-                async for entry in results:
-                    vak, opdracht, url = entry
-                    await interaction.response.send_message(f"Huiswerk dat vandaag ingeleverd moet worden:\n VaK:{vak}  Opdracht: {opdracht} te vinden op: {url}")
+        async with db.execute(f"SELECT vak, opdracht, url FROM huiswerk WHERE time = ? ", (str(new_time),))as results:
+            await interaction.response.send_message("Huiswerk voor vandaag:")
+            async for entry in results:
+                vak, opdracht, url = entry
+                if entry is None:
+                    return await hw_channel.send("Geen huiswerk voor vandaag.")
+                else:
+                    await hw_channel.send(f"Vak: {vak}\nOpdracht: {opdracht}\nTe vinden op: {url}\n=========\n\n") 
         try:
             await db.close()
         except ValueError:
@@ -46,7 +46,12 @@ class huiswerk(commands.Cog):
         return await interaction.response.send_message(f"{vak} -- {opdr}  op {url} met de deadline {deadline} is toegevoegd aan de database.")
 
 
-
+    @app_commands.command(name="deletehw", description="Verwijder huiswerk uit de database.")
+    async def deletehw(self, interaction : discord.Interaction, url: str):
+        db = await utilities.connect_database()
+        await db.execute("DELETE FROM HUISWERK WHERE url = ?", (url, ))
+        await db.commit()
+        return await interaction.response.send_message(f"Verwijdered {url} van de huiswerk database.")
 
 
 
