@@ -75,8 +75,8 @@ class moderation(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        database = await utilities.connectdb(assets.Database_file)
-        await database.execute("CREATE TABLE IF NOT EXISTS moderationLogs (logid INTEGER PRIMARY KEY, guildid int, moderationLogTypes int, userid int, moduserid int, content varchar, duration int)")
+        database = await utilities.connect_database()
+        await database.execute("CREATE TABLE IF NOT EXISTS moderationLogs (logid INTEGER PRIMARY KEY, guildid int, moderationLogType int, userid int, moduserid int, content varchar, duration int)")
         await database.commit()
         time.sleep(2)
         try:
@@ -89,11 +89,11 @@ class moderation(commands.Cog):
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         """Kicks an user, Format: @user Reason for kick"""
-        database = await utilities.connectdb(assets.Database_file)
+        database = await utilities.connect_database()
         await ctx.channel.purge(limit=1)
         try:
             log_counter()
-            database.execute("INSERT OR IGNORE INTO moderationLogs (logid, guildid, moderationLogTypes, userid, moduserid, content, duration) VALUES(?, ?, ?, ?, ?, ?)", (new_case, ctx.guild.id, 4, member.id, ctx.author.id, reason, "0"))
+            database.execute("INSERT OR IGNORE INTO moderationLogs (logid, guildid, moderationLogType, userid, moduserid, content, duration) VALUES(?, ?, ?, ?, ?, ?)", (new_case, ctx.guild.id, 4, member.id, ctx.author.id, reason, "0"))
             await database.commit()
             await asyncio.sleep(2)
             await database.close()
@@ -109,7 +109,7 @@ class moderation(commands.Cog):
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         """Bans an user. Formaat: @user reden voor verbanning"""
-        database = await utilities.connectdb(assets.Database_file)
+        database = await utilities.connect_database()
         await ctx.channel.purge(limit=1)
         try:
             await member.ban(reason=reason)
@@ -117,7 +117,7 @@ class moderation(commands.Cog):
             await ctx.send("Je hebt geen permissies om dit te doen")
         try:
             log_counter()
-            await database.execute("INSERT OR IGNORE INTO moderationLogs (logid, guildid, moderationLogTypes, userid, moduserid, content, duration) VALUES (?, ?, ?, ?, ?, ?,?)", (new_case, ctx.guild.id, 6, member.id, ctx.author.id, reason, "0"))
+            await database.execute("INSERT OR IGNORE INTO moderationLogs (logid, guildid, moderationLogType, userid, moduserid, content, duration) VALUES (?, ?, ?, ?, ?, ?,?)", (new_case, ctx.guild.id, 6, member.id, ctx.author.id, reason, "0"))
             await database.commit()
             await asyncio.sleep(2)
             await database.close()
@@ -134,7 +134,7 @@ class moderation(commands.Cog):
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, member, *, reason=None):
         """Unbans an user from the server. Format: username#0000"""
-        database = await utilities.connectdb(assets.Database_file)
+        database = await utilities.connect_database()
         await ctx.channel.purge(limit=1)
         banned_users = await ctx.guild.bans()
         member_name, member_discriminator = member.split('#')
@@ -147,7 +147,7 @@ class moderation(commands.Cog):
                 try:
                     log_counter()
                     cur = database.cursor()
-                    await database.execute("INSERT OR IGNORE INTO moderationLogs (logid, guildid, moderationLogTypes, userid, moduserid, content, duration) VALUES (?, ?, ?, ?, ?, ?, ?)", (new_case, ctx.guild.id, 7,  member.id, ctx.author.id, reason, "0"))
+                    await database.execute("INSERT OR IGNORE INTO moderationLogs (logid, guildid, moderationLogType, userid, moduserid, content, duration) VALUES (?, ?, ?, ?, ?, ?, ?)", (new_case, ctx.guild.id, 7,  member.id, ctx.author.id, reason, "0"))
                     await database.commit()
                     await asyncio.sleep(2)
                     await cur.close()
@@ -170,7 +170,7 @@ class moderation(commands.Cog):
     @commands.has_permissions(manage_messages=True)
     async def mute(self, ctx, member: discord.Member, time: TimeConverter = None, *, reason=None):
         """Mute an  user. Format @user time(optional, 1h, 1d etc) Reason for mute"""
-        database = await utilities.connectdb(assets.Database_file)
+        database = await utilities.connect_database()
         role = discord.utils.get(ctx.guild.roles, name="Muted")
         role_to_remove = []
         log_counter()
@@ -183,7 +183,7 @@ class moderation(commands.Cog):
                 if time is not None:
                     await member.edit(roles=[])
                     await member.add_roles(role)
-                    await database.execute("INSERT INTO moderationLogs (logid, guildid, moderationLogTypes, userid, moduserid, content, duration) VALUES(?, ?, ?, ?, ?, ?, ?)", (new_case, ctx.guild.id, 2, member.id, ctx.author.id, reason, time))
+                    await database.execute("INSERT INTO moderationLogs (logid, guildid, moderationLogType, userid, moduserid, content, duration) VALUES(?, ?, ?, ?, ?, ?, ?)", (new_case, ctx.guild.id, 2, member.id, ctx.author.id, reason, time))
                     await database.commit()
                     await asyncio.sleep(2)
                     await database.close()
@@ -197,7 +197,7 @@ class moderation(commands.Cog):
                 else:
                     await member.edit(roles=[])
                     await member.add_roles(role)
-                    await database.execute("INSERT INTO moderationLogs (logid, guildid, moderationLogTypes, userid, moduserid, content, duration) VALUES(?, ?, ?, ?, ?, ?, ?)", (new_case, ctx.guild.id, 2, member.id, ctx.author.id, reason, time))
+                    await database.execute("INSERT INTO moderationLogs (logid, guildid, moderationLogType, userid, moduserid, content, duration) VALUES(?, ?, ?, ?, ?, ?, ?)", (new_case, ctx.guild.id, 2, member.id, ctx.author.id, reason, time))
                     await database.commit()
                     await asyncio.sleep(2)
                     await database.close()
@@ -226,11 +226,11 @@ class moderation(commands.Cog):
     @commands.has_permissions(manage_messages=True)
     async def warn(self, ctx, member: discord.Member = None, *, reason=None):
         """Waarschuwd een user. Format: @user reason for warn"""
-        database = await utilities.connectdb(assets.Database_file)
+        database = await utilities.connect_database()
         if member is not None:
             if reason is not None:
                 log_counter()
-                await database.execute("INSERT INTO moderationLogs (logid, guildid, moderationLogTypes, userid, moduserid, content, duration) VALUES (?, ?, ?, ?, ?, ?,?)", (new_case, ctx.guild.id, 1, member.id, ctx.author.id, reason, "0"))
+                await database.execute("INSERT INTO moderationLogs (logid, guildid, moderationLogType, userid, moduserid, content, duration) VALUES (?, ?, ?, ?, ?, ?,?)", (new_case, ctx.guild.id, 1, member.id, ctx.author.id, reason, "0"))
                 await database.commit()
                 await asyncio.sleep(2)
                 await database.close()
@@ -244,13 +244,13 @@ class moderation(commands.Cog):
     @commands.has_permissions(manage_messages=True)
     async def modlogs(self, ctx, member: discord.Member = None):
         """Laat de logs van een user zien.. Format: @user """
-        database = await utilities.connectdb(assets.Database_file)
+        database = await utilities.connect_database()
         index = 0
         embed = discord.Embed(title=f"logs voor: ({member.id}){member.name}#{member.discriminator}", description="___ ___", color=discord.Color.blue())
         msg = await ctx.send(embed=embed)
         if member is not None:
             try:
-                async with database.execute('SELECT logid, moderationLogTypes, moduserid, content, duration FROM moderationLogs WHERE guildid = ? AND userid = ?', (ctx.guild.id, member.id)) as cursor:
+                async with database.execute('SELECT logid, moderationLogType, moduserid, content, duration FROM moderationLogs WHERE guildid = ? AND userid = ?', (ctx.guild.id, member.id)) as cursor:
                     async for entry in cursor:
                         logid, moderationLogTypes, moduserid, content, duration = entry
                         Moderator = self.bot.get_user(moduserid)
@@ -270,7 +270,7 @@ class moderation(commands.Cog):
     async def delwarn(self, ctx, caseno=None):
         """Verwijderd een log van een user. Format: delwarn case_Number"""
         if caseno is not None:
-            database = await utilities.connectdb(assets.Database_file)
+            database = await utilities.connect_database()
             await database.execute("DELETE FROM moderationLogs WHERE logid = ?", (caseno))
             await database.commit()
             await asyncio.sleep(2)

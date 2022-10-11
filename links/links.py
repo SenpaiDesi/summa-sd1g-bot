@@ -4,7 +4,7 @@ from discord import app_commands
 from discord.app_commands import Choice
 from links import linkaddr
 
-class tickets(commands.Cog):
+class faq(commands.Cog):
     """faq links"""
     def __init__(self, bot:commands.Bot) -> None:
         self.bot = bot
@@ -15,8 +15,6 @@ class tickets(commands.Cog):
         Choice(name="Itslearning", value="itslearning"),
         Choice(name="Rooster", value="rooster"),
         Choice(name="Wachtwoord Reset/Veranderen", value="paswdreset")
-        #Choice(name="unban ticket", value="unban"),
-        #Choice(name="Anticheat Unban ticket", value="acunban")
     ])
     async def subticket(self, interaction:discord.Interaction, link_type:str):
         channel = self.bot.get_channel(1024327971374387241)
@@ -37,4 +35,4 @@ class tickets(commands.Cog):
 
 
 async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(tickets(bot))
+    await bot.add_cog(faq(bot))
