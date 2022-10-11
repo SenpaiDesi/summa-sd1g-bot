@@ -4,7 +4,7 @@ from discord import app_commands
 from discord.app_commands import Choice
 from links import linkaddr
 
-class tickets(commands.Cog):
+class faq(commands.Cog):
     """faq links"""
     def __init__(self, bot:commands.Bot) -> None:
         self.bot = bot
@@ -37,4 +37,4 @@ class tickets(commands.Cog):
 
 
 async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(tickets(bot))
+    await bot.add_cog(faq(bot))
