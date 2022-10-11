@@ -17,25 +17,25 @@ class huiswerk(commands.Cog):
         hw_channel = self.bot.get_channel(981263225817550922)
 
 
-    @app_commands.command(name="huiswerkcheck", description="Kijk of er opdrachten zijn vandaag.")
-    async def huiswerk_check(self, interaction: discord.Interaction):
+    @commands.command(name="huiswerkcheck", description="Kijk of er opdrachten zijn vandaag.")
+    async def huiswerk_check(self, ctx):
         db = await utilities.connect_database()
         await utilities.check_huiswerk_vandaag()
         async with db.execute(f"SELECT vak, opdracht, url FROM huiswerk WHERE time = ? ", (str(new_time),))as results:
-            await interaction.response.send_message("Huiswerk voor vandaag:")
+            await ctx.send("Huiswerk voor vandaag:")
             async for entry in results:
                 vak, opdracht, url = entry
                 if entry is None:
-                    return await hw_channel.send("Geen huiswerk voor vandaag.")
+                    return await ctx.send("Geen huiswerk voor vandaag.")
                 else:
-                    await hw_channel.send(f"Vak: {vak}\nOpdracht: {opdracht}\nTe vinden op: {url}\n=========\n\n") 
+                    await ctx.send(f"Vak: {vak}\nOpdracht: {opdracht}\nTe vinden op: {url}\n=========\n\n") 
         try:
             await db.close()
         except ValueError:
             pass
     
-    @app_commands.command(name="huiswerkadd", description="Voeg een huiswerk item toe. format: Dag-maand-jaar. Bijv: 10-10-2022")
-    async def additem(self, interaction : discord.Interaction, vak:str, opdr:str, url:str, deadline:str):
+    @commands.command(name="huiswerkadd")
+    async def additem(self, ctx, vak:str, opdr:str, url:str, deadline:str):
         db = await utilities.connect_database()
         await db.execute(F"INSERT OR IGNORE INTO huiswerk VALUES (?, ?, ?, ?)", (vak, opdr, url, deadline, ))
         await db.commit()
@@ -43,7 +43,7 @@ class huiswerk(commands.Cog):
             await db.close()
         except ValueError:
             pass
-        return await interaction.response.send_message(f"{vak} -- {opdr}  op {url} met de deadline {deadline} is toegevoegd aan de database.")
+        return await ctx.send(f"{vak} -- {opdr}  op {url} met de deadline {deadline} is toegevoegd aan de database.")
 
 
     @app_commands.command(name="deletehw", description="Verwijder huiswerk uit de database.")
