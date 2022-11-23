@@ -29,7 +29,7 @@ class huiswerk(commands.Cog):
         db = await utilities.connect_database()
         await utilities.check_huiswerk_vandaag()
         async with db.execute(f"SELECT vak, opdracht, url FROM huiswerk WHERE time = ? ", (str(new_time),))as results:
-            await interaction.response.send_message("Huiswerk voor vandaag:")
+            await interaction.response.send_message("Huiswerk laden...")
             async for entry in results:
                 vak, opdracht, url = entry
                 sendMessage += f"Vak: {vak}\nOpdracht: {opdracht}\nTe vinden op: {url}\n=========\n\n"
@@ -40,9 +40,10 @@ class huiswerk(commands.Cog):
             await db.close()
         except ValueError:
             pass
-        
-        await interaction.edit_original_response(content = sendMessage) 
-    
+        try:
+            await interaction.edit_original_response(content = sendMessage) 
+        except discord.errors.HTTPException:
+            return await interaction.edit_original_response(content="**Geen huiswerk voor vandaag.**")
     @app_commands.command(name="huiswerkadd", description="Voeg huiswerk toe. ")
     # Voeg huiswerk toe
     async def additem(self, interaction : discord.Interaction, vak:str, opdr:str, url:str, deadline:str):

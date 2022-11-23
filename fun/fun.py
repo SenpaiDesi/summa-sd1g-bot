@@ -26,7 +26,10 @@ class fun(commands.Cog):
         Choice(name="Dad joke", value="dadjoke"),
         Choice(name="Dark humor", value="darkhumor"),
         Choice(name="Programming", value="programming"),
-        Choice(name="Spooky", value="spooky")
+        Choice(name="Spooky", value="spooky"),
+        Choice(name="Misc", value="misc"),
+        Choice(name="Pun",value="pun"),
+        Choice(name="Christmas", value="christmas")
     ])
     async def joke(self, interaction : discord.Interaction, joke:str):
         j = await Jokes()
@@ -60,8 +63,36 @@ class fun(commands.Cog):
                 setup = joke["setup"]
                 delivery = joke["delivery"]
                 await interaction.response.send_message(f"{setup}\n{delivery}")
+        elif joke == "misc":
+            joke = await j.get_joke(category=["Misc"])
+            try:
+                written = joke['joke']
+                await interaction.response.send_message(written)
+            except KeyError:
+                setup = joke["setup"]
+                delivery = joke["delivery"]
+                await interaction.response.send_message(f"{setup}\n{delivery}")
+        elif joke == "pun":
+            joke = await j.get_joke(category=["Pun"])
+            try:
+                written = joke['joke']
+                await interaction.response.send_message(written)
+            except KeyError:
+                setup = joke["setup"]
+                delivery = joke["delivery"]
+                await interaction.response.send_message(f"{setup}\n{delivery}")
+        elif joke == "christmas":
+            joke = await j.get_joke(category=["Christmas"])
+            try:
+                written = joke['joke']
+                await interaction.response.send_message(written)
+            except KeyError:
+                setup = joke["setup"]
+                delivery = joke["delivery"]
+                await interaction.response.send_message(f"{setup}\n{delivery}")
         else:
             return await interaction.response.send_message("Sorry dit type joke is nog niet geimplementeerd.")
+        
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(fun(bot))
