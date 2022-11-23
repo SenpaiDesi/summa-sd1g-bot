@@ -3,5 +3,6 @@ modules = ["links.links",
            "huiswerk.huiswerk",
            "admins.admins",
            "moderation.moderation",
-           "help.help"]
+           "help.help",
+           "fun.fun"]
 jsonfile = "./jsonfiles/config.json"
