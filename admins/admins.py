@@ -7,7 +7,7 @@ class admins(commands.Cog):
     """Admin commands alleen te gebruiken door de bot creator"""
     def __init__(self, bot:commands.Bot) -> None:
         self.bot = bot
-
+     # zet de database op.
     @commands.command(name="dbsetup")
     @commands.is_owner()
     async def dbsetup(self, ctx):

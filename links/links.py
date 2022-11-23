@@ -9,6 +9,8 @@ class faq(commands.Cog):
     def __init__(self, bot:commands.Bot) -> None:
         self.bot = bot
 
+
+    	# commands voor de veelgevraagde links.
     @app_commands.command(name="links", description="Vind hier de meest gevraagde links.")
     @app_commands.describe(link_type = "Kies de link die je wil vinden.")
     @app_commands.choices(link_type = [
@@ -24,10 +26,6 @@ class faq(commands.Cog):
             await interaction.response.send_message(f"Je kunt je rooster vinden op: <{linkaddr.rooster}>", ephemeral=False)
         elif link_type == "paswdreset":
             await interaction.response.send_message(f"Je kunt je wachtwoord resetten / veranderen op: <{linkaddr.password_reset}>", ephemeral=False)
-        #elif link_type == "unban":
-            #await interaction.response.send_message(f"Ticket created at {channel.mention}", ephemeral=False)
-        #elif link_type == "acunban":
-            #await interaction.response.send_message(f"Ticket created at {channel.mention}", ephemeral=False)
 
 
 
